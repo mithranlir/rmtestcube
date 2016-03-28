@@ -1,8 +1,6 @@
-package com.qfs.sandbox;
+package rmlib.example.riskdata;
 
 import com.qfs.msg.IMessageChannel;
-import com.qfs.sandbox.model.impl.RiskEntry;
-import com.qfs.sandbox.source.impl.RiskEntryGenerator;
 import com.qfs.store.impl.Datastore;
 import rmlib.channel.ChannelFeedHelper;
 import rmlib.channel.DefaultValueService;

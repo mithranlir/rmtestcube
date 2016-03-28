@@ -1,16 +1,8 @@
-/*
- * (C) Quartet FS 2007-2013
- * ALL RIGHTS RESERVED. This material is the CONFIDENTIAL and PROPRIETARY
- * property of Quartet Financial Systems Limited. Any unauthorized use,
- * reproduction or transfer of this material is strictly prohibited
- */
-package com.qfs.sandbox.model.impl;
+package rmlib.example.riskdata;
 
 import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.qfs.sandbox.cfg.SourceConfig;
 
 /**
  * Risk entry record, to indicate a risk to be computed.
@@ -65,7 +57,7 @@ public class RiskEntry {
 	public String toCsvString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getTradeId());
-		sb.append(SourceConfig.CSV_SEPARATOR).append(RISK_CSV_DATE_FORMAT.get().format(getAsOfDate()));
+		sb.append(';').append(RISK_CSV_DATE_FORMAT.get().format(getAsOfDate()));
 		return sb.toString();
 	}
 

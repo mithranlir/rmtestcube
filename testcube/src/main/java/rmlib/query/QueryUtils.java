@@ -30,6 +30,9 @@ public class QueryUtils {
     }
 
     public static void queryCubeSimple(String cubeName, IActivePivotManager manager, int nbWildCards) throws QueryException {
+
+        System.out.println("queryCubeSimple");
+
         final GetAggregatesQuery query = createSimpleQuery(nbWildCards);
         final ICellSet cellSet = executeQuery(cubeName, manager, query);
         System.out.println("LocationCount=" + cellSet.getLocationCount());

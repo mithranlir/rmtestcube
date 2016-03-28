@@ -1,55 +1,27 @@
-package com.qfs.sandbox.cfg;
+package rmlib.example.riskdata;
 
 import com.qfs.chunk.IArrayReader;
 import com.qfs.chunk.IWritableArray;
-import com.qfs.desc.IDatastoreSchemaDescription;
 import com.qfs.desc.impl.StoreDescriptionBuilder;
-import com.qfs.logging.MessagesServer;
-import com.qfs.sandbox.RiskDataHelper;
-import com.qfs.sandbox.model.impl.RiskEntry;
-import com.qfs.store.IDatastore;
 import com.qfs.store.record.IRecordFormat;
-import com.quartetfs.biz.pivot.IActivePivotManager;
 import com.quartetfs.biz.pivot.cube.dimension.IDimension;
 import com.quartetfs.biz.pivot.cube.hierarchy.ILevelInfo;
-import com.quartetfs.biz.pivot.definitions.IActivePivotManagerDescription;
-import com.quartetfs.biz.pivot.security.IContextValueManager;
-import com.quartetfs.biz.pivot.security.IRoleComparator;
-import com.quartetfs.biz.pivot.security.impl.ContextValueManager;
-import com.quartetfs.biz.pivot.security.impl.ContextValuePropagator;
-import com.quartetfs.biz.pivot.server.impl.XMLAEnabler;
-import com.quartetfs.fwk.QuartetException;
+import jsr166e.ThreadLocalRandom;
 import rmlib.ProgrammaticCube;
 import rmlib.cubebuilder.CubeBuilder;
 import rmlib.cubebuilder.subbuilder.*;
-import jsr166e.ThreadLocalRandom;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import static com.qfs.literal.ILiteralType.DOUBLE;
 import static com.qfs.literal.ILiteralType.LONG;
-import static com.qfs.sandbox.cfg.DatastoreConsts.RISK__PNL;
+import static rmlib.example.riskdata.DatastoreConsts.RISK__PNL;
 
-@Configuration
-public class GenericActivePivotConfig {
+public class RiskCubeBuildHelper {
 
-    private static Logger LOGGER = MessagesServer.getLogger(GenericActivePivotConfig.class);
 
-    @Autowired
-    protected Environment env;
-
-    public GenericActivePivotConfig() {
-    }
-
-    @Bean
-    public ProgrammaticCube initManager() throws Exception {
-
+    public static ProgrammaticCube buildRiskCube() throws Exception {
         final CubeBuilder cubeBuilder = new CubeBuilder();
 
         final ProgrammaticCube testCube = cubeBuilder
@@ -110,66 +82,13 @@ public class GenericActivePivotConfig {
                 .withChannel(RiskDataHelper.TOPIC_RISK, RiskDataHelper.TEST_RISK_STORE, Arrays.asList("pnl"), false, createProcedureForRiskStore())
                 .withEpochManagementPolicy(new CustomEpochPolicy(5 * 60_000, 5 * 60_000, 30 * 60_000))
                         // Retain the latest 5 minutes of history and retain one version each 5 minutes, until the last 30 minutes.
-                .buildTestCube(false);
+                .buildTestCube(true);
 
         return testCube;
     }
 
-    @Bean
-    public IDatastoreSchemaDescription schemaDescription(ProgrammaticCube testCube) {
-        return testCube.getDatastoreSchemaDescription();
-    }
 
-    @Bean
-    public IActivePivotManagerDescription activePivotManagerDescription(ProgrammaticCube testCube) {
-        return testCube.getActivePivotManagerDescription();
-    }
-
-    @Bean
-    public IDatastore datastore(ProgrammaticCube testCube) {
-        return testCube.getDatastore();
-    }
-
-    @Bean(destroyMethod = "stop")
-    public IActivePivotManager activePivotManager(ProgrammaticCube testCube) {
-         return testCube.getManager();
-    }
-
-
-
-    @Bean(destroyMethod = "shutdown")
-    public ContextValueManager contextValueManager(IRoleComparator roleComparator) throws QuartetException {
-        ContextValueManager contextValueManager = new ContextValueManager();
-        if(null != roleComparator) {
-            contextValueManager.setRoleComparator(roleComparator);
-        }
-
-        return contextValueManager;
-    }
-
-    @Bean
-    public IRoleComparator roleComparator() {
-        return null;
-    }
-
-    @Bean
-    public ContextValuePropagator contextValuePropagator(IContextValueManager contextValueManager) {
-        ContextValuePropagator propagator = new ContextValuePropagator();
-        propagator.setContextValueManager(contextValueManager);
-        return propagator;
-    }
-
-    @Bean
-    public XMLAEnabler XMLAEnabler(IActivePivotManager activePivotManager, IContextValueManager contextValueManager) throws Exception {
-        XMLAEnabler xmla = new XMLAEnabler();
-        xmla.setActivePivotManager(activePivotManager);
-        xmla.setContextValueManager(contextValueManager);
-        xmla.setLogging(false);
-        xmla.setMonitoring(true);
-        return xmla;
-    }
-
-    public CubeBuilder.AbstractUpdateWhereProcedure createProcedureForRiskStore() {
+    public static CubeBuilder.AbstractUpdateWhereProcedure createProcedureForRiskStore() {
 
         final CubeBuilder.AbstractUpdateWhereProcedure riskProcedure = new
                 CubeBuilder.AbstractUpdateWhereProcedure() {

@@ -1,4 +1,4 @@
-package com.qfs.sandbox;
+package rmlib.example.checks;
 
 import com.quartetfs.biz.pivot.IActivePivotManager;
 import com.quartetfs.biz.pivot.IMultiVersionActivePivot;
@@ -15,6 +15,8 @@ import java.util.List;
 public class RiskResultHelper {
 
     public static void queryCubeAndCheckResults(String cubeName, IActivePivotManager manager) throws QueryException, ParseException {
+
+        System.out.println("queryCubeAndCheckResults");
 
         final IMultiVersionActivePivot ap = manager.getActivePivots().get(cubeName);
         final ProgrammaticCube testCube = new ProgrammaticCube(manager, ap, null, null, null, null, null, null);
@@ -43,6 +45,9 @@ public class RiskResultHelper {
 
 
     public static void printHierarchies(String cubeName, IActivePivotManager manager) {
+
+        System.out.println("printHierarchies");
+
         final IMultiVersionActivePivot ap = manager.getActivePivots().get(cubeName);
         final List<? extends IMultiVersionHierarchy> hierarchies = ap.getHierarchies();
         for(IMultiVersionHierarchy hierarchy : hierarchies) {
