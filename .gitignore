@@ -1,0 +1,8 @@
+ .idea/
+ *.iml
+ programmaticcube-parent.iml 
+ programmaticcube/programmaticcube.iml
+ programmaticcube/target/
+ testcube/testcube.iml
+ testcube/target/
+  

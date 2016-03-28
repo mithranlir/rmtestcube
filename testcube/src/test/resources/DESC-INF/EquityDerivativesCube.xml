@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<pivotDescription xmlns="http://www.quartetfs.com"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.quartetfs.com ../activepivot-types.xsd">
+
+	<!-- Selection of the aggregate provider -->
+	<aggregateProvider pluginKey="JUST_IN_TIME">
+		<properties>
+			<entry key="rangeSharing" value="false" />
+		</properties>
+
+		<partialProvider pluginKey="BITMAP">
+			<hierarchy name="Underlyings" />
+
+			<!-- Slicing hierarchies must belong to the partial provider definition -->
+			<hierarchy name="HistoricalDates" />
+			<hierarchy name="TimeBucketDynamic" />
+		</partialProvider>
+
+	</aggregateProvider>
+
+	<!-- Cache the most recently accessed {location, measure} pairs -->
+	<aggregatesCacheSize>-1</aggregatesCacheSize>
+
+	<!-- Definition of the dimensions -->
+	<dimensions>
+		<import resource="DESC-INF/Dimensions.xml"/>
+	</dimensions>
+
+	<!-- Definition of the Epoch dimension -->
+	<!-- Its content depends on the Epoch Management Policy (see DatastoreConfig.datastore). -->
+	<!-- This dimension can be disabled for some users with to the Mdx context. -->
+	<epochDimension enabled="true" levelComparator="REVERSE_EPOCH" formatter="EPOCH[HH:mm:ss]"/>
+
+	<!-- Definition of the measures -->
+	<measures defaultMeasures="contributors.COUNT">
+		<import resource="DESC-INF/Measures.xml"/>
+	</measures>
+
+	<!-- 
+		Previously, one could define <kpis>, holding its KPI definitions.
+		This was moved to <mdxContext> inside <sharedContexts>.
+		However, you still have to use this for <autokpis>.
+	-->
+
+	<sharedContexts>
+
+		<!-- Drillthrough customization -->
+		<drillthroughProperties>
+			<!-- Setting some columns first in order based on their names -->
+			<headersComparator pluginKey="Custom">
+				<order name="firstObjects">
+					<value>Desk</value>
+					<value>UnderlierCurrency</value>
+				</order>
+			</headersComparator>
+			<!-- Hide the standard book id, which is an object. -->
+			<hiddenColumns>
+				<column>BookId</column>
+			</hiddenColumns>
+			<calculatedColumns>
+				<calculatedColumn pluginKey="DoubleAdder" name="delta + gamma" underlyingFields="delta,gamma" />
+				<calculatedColumn pluginKey="BookIdColumn" name="Book ID" underlyingFields="BookId" />
+			</calculatedColumns>
+			<calculatedColumnSets>
+				<calculatedColumnSet pluginKey="PnlCurrencyColumnSet">
+					<properties>
+						<entry key="prefix" value="pnl in"/>
+						<entry key="currencies" value="EUR,USD,GBP,JPY,CHF,ZAR"/>
+					</properties>
+				</calculatedColumnSet>
+			</calculatedColumnSets>
+			<!-- Hard limit for the number of rows returned by drillthrough queries -->
+			<maxRows>10000</maxRows>
+		</drillthroughProperties>
+
+
+		<!-- Contextual configuration of the MDX engine -->
+		<mdxContext>
+
+			<!-- Restrict formula evaluation on the crossjoined tuples existing in 
+				the cube, instead of all possible tuples. -->
+			<aggressiveFormulaEvaluation>true</aggressiveFormulaEvaluation>
+			
+			<kpis>
+				<!-- Previous example of KPI in ActivePivot -->
+				<kpi name="PnL Monitoring" caption="PnL Monitoring"
+						description="Pnl Monitoring using existing measures">
+					<value>[Measures].[pnl.SUM]</value> 
+					<goal>[Measures].[PnL Limit]</goal>
+				 	<status graphic="Shapes">[Measures].[PnL Limit Status]</status>
+				</kpi>
+				
+				<!-- Example of MDX support for KPIs in ActivePivot -->
+				<kpi name="PnL Monitoring (MDX)" caption="PnL Monitoring (MDX)"
+						description="Pnl Monitoring using MDX expressions">
+					<value>[Measures].[pnl.SUM]</value> 
+					<goal formatStringExpression="'#,###'">0</goal>
+				 	<status graphic="Shapes">
+				 		Case
+						  When [Measures].[pnl.SUM] > 0
+						    Then 1
+						  When [Measures].[pnl.SUM] &lt; 0
+						    Then -1
+						  Else 0
+						End
+				 	</status>
+				</kpi>
+			</kpis>
+
+			<!-- Add a named set -->
+			<namedSets>
+				<set uniqueName="[Top2Underlyings]" caption="Top two of underlyings"
+					expression="TopCount([Underlyings].[ALL].[AllMember].Children, 2, [Measures].[contributors.COUNT])"
+					description="The two elements of underlyings which have the highest value"  />
+			</namedSets>
+		</mdxContext>
+
+		<!-- Query maximum execution time (before timeout cancellation) -->
+		<queriesTimeLimit seconds="30" />
+	</sharedContexts>
+
+</pivotDescription>

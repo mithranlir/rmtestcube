@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contexts xmlns="http://www.quartetfs.com"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.quartetfs.com ../../activepivot-types.xsd">
+
+	<!-- The content of gloabl.xml applies to all the pivots -->
+
+	<referenceCurrency currency="ZAR" />
+</contexts>

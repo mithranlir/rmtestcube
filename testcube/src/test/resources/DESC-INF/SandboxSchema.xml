@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schemaDescription
+	xmlns="http://www.quartetfs.com"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.quartetfs.com ../activepivot-types.xsd">
+
+	<!-- Selection of fields from the datastore -->
+	<datastoreSelection baseStore="Risk">
+		<fields>
+
+			<!-- Product fields -->
+			<field name="UnderlierCurrency" expression="RiskToTrade/TradeToProduct/UnderlierCurrency" />
+			<field name="UnderlierType"     expression="RiskToTrade/TradeToProduct/UnderlierType" />
+			<field name="UnderlierCode"     expression="RiskToTrade/TradeToProduct/UnderlierCode" />
+			<field name="ProductType"       expression="RiskToTrade/TradeToProduct/ProductType" />
+			<field name="ProductName"       expression="RiskToTrade/TradeToProduct/ProductName" />
+			<field name="productBaseMtm"    expression="RiskToTrade/TradeToProduct/ProductBaseMtm" />
+			<field name="theta"             expression="RiskToTrade/TradeToProduct/theta"/>
+			<field name="rho"               expression="RiskToTrade/TradeToProduct/rho"/>
+
+			<!-- Trade fields -->
+			<field name="Desk"        expression="RiskToTrade/Desk" />
+			<field name="BookId"      expression="RiskToTrade/BookId" />
+			<field name="Date"        expression="RiskToTrade/Date" />
+			<field name="DateBucket"  expression="RiskToTrade/DateBucket" />
+			<field name="IsSimulated" expression="RiskToTrade/IsSimulated" />
+			<field name="Status"      expression="RiskToTrade/Status" />
+			<field name="productId"   expression="RiskToTrade/ProductId" />
+
+			<!-- Risk attributes -->
+			<field name="AsOfDate" />
+			<field name="HostName" />
+
+			<!-- Risk measures -->
+			<field name="delta" />
+			<field name="gamma" />
+			<field name="vega" />
+			<field name="pnl" />
+			<field name="pnlDelta" />
+			<field name="pnlVega" />
+		</fields>
+	</datastoreSelection>
+
+
+
+
+	<!-- List of the ActivePivot instances within that ActivePivot Schema -->
+	<activePivots>
+
+		<activePivot id="EquityDerivativesCube" >
+			<pivotDescription resource="DESC-INF/EquityDerivativesCube.xml" />
+		</activePivot>
+
+		<activePivot id="EquityDerivativesCubeSmall">
+			<pivotDescription resource="DESC-INF/EquityDerivativesCubeSmall.xml" />
+		</activePivot>
+
+		<activePivot id="EquityDerivativesCubeEURGBP">
+			<pivotDescription resource="DESC-INF/EquityDerivativesCube.xml" />
+			
+			<!-- A filter defined on the currency field that filters out -->
+			<!-- all the currencies that are not EUR or GBP.             -->         
+			<filter>
+				<in expression="UnderlierCurrency">
+					<element><value xsi:type="xs:string">EUR</value></element>
+					<element><value xsi:type="xs:string">GBP</value></element>
+				</in>
+			</filter>
+		</activePivot> 
+
+	</activePivots>
+	
+	<!-- List of the distributed ActivePivot instances within that ActivePivot Schema -->
+	<distributedActivePivots>
+	
+		<distributedActivePivot id="EquityDerivativesCubeDist">
+			<pivotDescription resource="DESC-INF/EquityDerivativesCubeDist.xml"/>
+			<underlyingPivotId>EquityDerivativesCube</underlyingPivotId>
+			<clusterId>EquityDerivativesCubeCluster</clusterId>
+			<distributionType>HORIZONTAL</distributionType>
+			<properties>
+				<entry key="distributingField"	value="HostName" />
+				<entry key="protocolPath"		value="jgroups-protocols/protocol-udp.xml" />
+			</properties>
+		</distributedActivePivot>
+		
+	</distributedActivePivots>
+
+</schemaDescription>
