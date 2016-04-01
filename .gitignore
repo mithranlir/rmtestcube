@@ -2,6 +2,7 @@
 *.iml
 programmaticcube-parent.iml 
 programmaticcube/programmaticcube.iml
+testcube/src/test/java/com/qfs/lic/impl/Licensing.java
 programmaticcube/target/
 testcube/testcube.iml
 testcube/target/
