@@ -5,6 +5,7 @@ import com.quartetfs.biz.pivot.IMultiVersionActivePivot;
 import com.quartetfs.biz.pivot.cube.hierarchy.ILevel;
 import com.quartetfs.biz.pivot.cube.hierarchy.IMultiVersionHierarchy;
 import com.quartetfs.fwk.query.QueryException;
+import rmlib.IProgrammaticCube;
 import rmlib.ProgrammaticCube;
 import rmlib.query.SimpleQueryUtils;
 import rmlib.result.AggregatesQueryResult;
@@ -19,7 +20,7 @@ public class RiskResultHelper {
         System.out.println("queryCubeAndCheckResults");
 
         final IMultiVersionActivePivot ap = manager.getActivePivots().get(cubeName);
-        final ProgrammaticCube testCube = new ProgrammaticCube(manager, ap, null, null, null, null, null, null, false);
+        final IProgrammaticCube testCube = new ProgrammaticCube(manager, ap, null, null, null, null, null, null);
 
         final AggregatesQueryResult result2 = SimpleQueryUtils.createAggregatesQueryBuilder(testCube)
                 .withHierarchy("HistoricalDates", new Object[]{ null })

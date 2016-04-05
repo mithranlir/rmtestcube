@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ProgrammaticCube {
+public class ProgrammaticCube implements IProgrammaticCube {
 
     private final IMultiVersionActivePivot pivot;
     private final IActivePivotManager manager;
@@ -35,7 +35,6 @@ public class ProgrammaticCube {
     private final IDatastoreSchemaDescription datastoreSchemaDescription;
     private final IActivePivotManagerDescription activePivotManagerDescription;
     private final IDatastore datastore;
-    private final boolean resetable;
 
     public ProgrammaticCube(IActivePivotManager manager,
                             IMultiVersionActivePivot pivot,
@@ -44,8 +43,7 @@ public class ProgrammaticCube {
                             DefaultValueService defaultValueService,
                             IDatastoreSchemaDescription datastoreSchemaDescription,
                             IActivePivotManagerDescription activePivotManagerDescription,
-                            IDatastore datastore,
-                            boolean resetable) {
+                            IDatastore datastore) {
         this.manager = manager;
         this.pivot = pivot;
         this.channelMap = channelMap;
@@ -54,25 +52,24 @@ public class ProgrammaticCube {
         this.datastoreSchemaDescription = datastoreSchemaDescription;
         this.activePivotManagerDescription = activePivotManagerDescription;
         this.datastore = datastore;
-        this.resetable = resetable;
     }
 
+    @Override
     public IMultiVersionActivePivot getPivot() {
         return pivot;
     }
 
+    @Override
     public IActivePivotManager getManager() {
         return manager;
     }
 
-    public ActivePivotManagerWrapper getManagerAsWrapper() {
-        return manager instanceof ActivePivotManagerWrapper ? (ActivePivotManagerWrapper) manager : null;
-    }
-
+    @Override
     public Map<String, IMessageChannel<String, Object>> getChannelMap() {
         return channelMap;
     }
 
+    @Override
     public void insertTestDataInDatatoreAndCommit(String storeName, final List<Map<String, Object>> mapList) {
 
         final ITransactionalWriter transactionalWriter = datastore.getTransactionManager();
@@ -98,6 +95,7 @@ public class ProgrammaticCube {
         TransactionHelper.commitTransaction(datastore);
     }
 
+    @Override
     public void insertDataInChannelWithDtoListAndCommit(ChannelData channelData) {
         final Datastore datastore = (Datastore) manager.getDatastore();
         TransactionHelper.startTransaction(datastore);
@@ -105,6 +103,7 @@ public class ProgrammaticCube {
         TransactionHelper.commitTransaction(datastore);
     }
 
+    @Override
     public void insertTestDataInChannelWithMapListAndCommit(ChannelData channelData) {
         final Datastore datastore = (Datastore) manager.getDatastore();
         TransactionHelper.startTransaction(datastore);
@@ -113,6 +112,7 @@ public class ProgrammaticCube {
         TransactionHelper.commitTransaction(datastore);
     }
 
+    @Override
     public void registerContinuousQueryListener(IGetAggregatesQuery aggregatesQuery,
                                                 IContinuousQueryListener<ICellSet, IVersionedContinuousQueryUpdate<ICellSet>> queryListener) throws QueryException {
 
@@ -127,24 +127,35 @@ public class ProgrammaticCube {
     }
 
 
+    @Override
     public IDatastoreSchemaDescription getDatastoreSchemaDescription() {
         return datastoreSchemaDescription;
     }
 
+    @Override
     public IActivePivotManagerDescription getActivePivotManagerDescription() {
         return activePivotManagerDescription;
     }
 
+    @Override
     public IDatastore getDatastore() {
         return datastore;
     }
 
+    @Override
     public Map<String, CubeBuilder.StoreFields> getStoreFieldTypeMap() {
         return storeFieldTypeMap;
     }
 
-    public boolean isResetable() {
-        return resetable;
+    @Override
+    public boolean isManagerResetable() {
+        return false;
     }
 
+    @Override
+    public void purgeDatastore() {
+        if (getDatastore() != null) {
+            getDatastore().getLatestVersion().getEpochManager().getHistories().clear();
+        }
+    }
 }

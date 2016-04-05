@@ -2,15 +2,15 @@ package rmlib.result;
 
 import com.quartetfs.biz.pivot.context.IContextValue;
 import com.quartetfs.fwk.query.QueryException;
-import rmlib.ProgrammaticCube;
+import rmlib.IProgrammaticCube;
 
 public class LocationsBuilder {
 
-    private final ProgrammaticCube testCube;
+    private final IProgrammaticCube testCube;
     private final GetAggregatesQueryBuilder getAggregatesQueryBuilder;
     private LocationBuilder locationBuilder;
 
-    public LocationsBuilder(GetAggregatesQueryBuilder getAggregatesQueryBuilder, ProgrammaticCube testCube) {
+    public LocationsBuilder(GetAggregatesQueryBuilder getAggregatesQueryBuilder, IProgrammaticCube testCube) {
         this.getAggregatesQueryBuilder = getAggregatesQueryBuilder;
         this.locationBuilder = new LocationBuilder(testCube.getPivot());
         this.locationBuilder.resetLocationArray();

@@ -100,4 +100,6 @@ public class ActivePivotManagerWrapper implements IActivePivotManager {
     public IActivePivotManager getActivePivotManager() {
         return current;
     }
+
+
 }

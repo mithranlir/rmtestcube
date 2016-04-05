@@ -30,6 +30,7 @@ import com.quartetfs.biz.pivot.impl.ActivePivotManagerBuilder;
 import com.quartetfs.biz.pivot.postprocessing.IPostProcessor;
 import com.quartetfs.biz.pivot.query.aggregates.IAggregatesContinuousHandler;
 import com.quartetfs.fwk.types.impl.ExtendedPluginInjector;
+import rmlib.IProgrammaticCube;
 import rmlib.ProgrammaticCube;
 import rmlib.channel.ChannelCreationHelper;
 import rmlib.channel.DefaultValueService;
@@ -195,9 +196,7 @@ public class CubeBuilder {
 
     }
 
-    public ProgrammaticCube buildTestCube(boolean start,
-                                          boolean resetable,
-                                          ActivePivotManagerWrapper rebuildableActivePivotManager) throws Exception {
+    public IProgrammaticCube buildTestCube(boolean start) throws Exception {
 
         final ActivePivotInstanceDescription instanceDescription =
                 buildInstanceDescription();
@@ -213,7 +212,8 @@ public class CubeBuilder {
 
         final Datastore datastore = datastoreBuildResult.getDatastore();
 
-        final DatastoreSchemaDescription datastoreSchemaDescription = datastoreBuildResult.getDatastoreSchemaDescription();
+        final DatastoreSchemaDescription datastoreSchemaDescription =
+                datastoreBuildResult.getDatastoreSchemaDescription();
 
         configureStoreFieldTypeMap(datastore);
 
@@ -221,11 +221,6 @@ public class CubeBuilder {
 
         IActivePivotManager manager =
                 buildManager(managerDescription, datastore);
-
-        if(resetable) {
-            rebuildableActivePivotManager.changeManager(manager, false);
-            manager = rebuildableActivePivotManager;
-        }
 
         if(start) {
             manager.init(null);
@@ -238,7 +233,7 @@ public class CubeBuilder {
         final IMultiVersionActivePivot pivot = manager.getActivePivots().get(TEST_CUBE);
 
         return new ProgrammaticCube(manager, pivot, channelMap, storeFieldTypeMap, defaultValueService,
-                datastoreSchemaDescription, managerDescription, datastore, resetable);
+                datastoreSchemaDescription, managerDescription, datastore);
     }
 
     private void configureStoreFieldTypeMap(Datastore datastore) {

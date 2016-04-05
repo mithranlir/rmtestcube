@@ -7,7 +7,7 @@ import com.qfs.store.record.IRecordFormat;
 import com.quartetfs.biz.pivot.cube.dimension.IDimension;
 import com.quartetfs.biz.pivot.cube.hierarchy.ILevelInfo;
 import jsr166e.ThreadLocalRandom;
-import rmlib.ProgrammaticCube;
+import rmlib.IProgrammaticCube;
 import rmlib.cubebuilder.CubeBuilder;
 import rmlib.cubebuilder.subbuilder.*;
 import rmlib.manager.ActivePivotManagerWrapper;
@@ -22,14 +22,11 @@ import static rmlib.example.riskdata.DatastoreConsts.RISK__PNL;
 public class RiskCubeBuildHelper {
 
 
-    public static ProgrammaticCube buildRiskCube(boolean start) throws Exception {
-        return buildRiskCube(start, false, null);
-    }
+    public static IProgrammaticCube buildRiskCube(boolean start) throws Exception {
 
-    public static ProgrammaticCube buildRiskCube(boolean start, boolean resetable, ActivePivotManagerWrapper activePivotManagerWrapper) throws Exception {
         final CubeBuilder cubeBuilder = new CubeBuilder();
 
-        final ProgrammaticCube testCube = cubeBuilder
+        final IProgrammaticCube testCube = cubeBuilder
                 .withStore(
                         new StoreDescriptionBuilder()
                                 .withStoreName(RiskDataHelper.TEST_RISK_STORE)
@@ -87,7 +84,7 @@ public class RiskCubeBuildHelper {
                 .withChannel(RiskDataHelper.TOPIC_RISK, RiskDataHelper.TEST_RISK_STORE, Arrays.asList("pnl"), false, createProcedureForRiskStore())
                 .withEpochManagementPolicy(new CustomEpochPolicy(5 * 60_000, 5 * 60_000, 30 * 60_000))
                         // Retain the latest 5 minutes of history and retain one version each 5 minutes, until the last 30 minutes.
-                .buildTestCube(start, resetable, activePivotManagerWrapper);
+                .buildTestCube(start);
 
         return testCube;
     }

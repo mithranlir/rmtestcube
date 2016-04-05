@@ -2,6 +2,7 @@ package rmlib.query;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import rmlib.IProgrammaticCube;
 import rmlib.result.GetAggregatesQueryBuilder;
 import com.quartetfs.biz.pivot.IActivePivotManager;
 import com.quartetfs.biz.pivot.ILocation;
@@ -13,7 +14,6 @@ import com.quartetfs.biz.pivot.impl.Location;
 import com.quartetfs.biz.pivot.query.impl.GetAggregatesQuery;
 import com.quartetfs.fwk.query.QueryException;
 import com.quartetfs.pivot.mdx.utils.impl.ServicesUtil;
-import rmlib.ProgrammaticCube;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ public class SimpleQueryUtils {
 
     public static SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy", Locale.ENGLISH);
 
-    public static GetAggregatesQueryBuilder createAggregatesQueryBuilder(ProgrammaticCube testCube) {
+    public static GetAggregatesQueryBuilder createAggregatesQueryBuilder(IProgrammaticCube testCube) {
         return new GetAggregatesQueryBuilder(testCube);
     }
 

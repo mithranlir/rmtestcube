@@ -8,7 +8,7 @@ import com.quartetfs.biz.pivot.context.IContextValue;
 import com.quartetfs.biz.pivot.query.impl.GetAggregatesQuery;
 import com.quartetfs.fwk.query.QueryException;
 import com.quartetfs.pivot.mdx.utils.impl.ServicesUtil;
-import rmlib.ProgrammaticCube;
+import rmlib.IProgrammaticCube;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,13 +17,13 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class GetAggregatesQueryBuilder {
 
-    private final ProgrammaticCube testCube;
+    private final IProgrammaticCube testCube;
     private List<ILocation> locations = newArrayList();
     private List<String> measures = newArrayList();
     private List<IContextValue> contextValues = newArrayList();
     private LocationsBuilder locationsBuilder;
 
-    public GetAggregatesQueryBuilder(ProgrammaticCube testCube) {
+    public GetAggregatesQueryBuilder(IProgrammaticCube testCube) {
         this.testCube = testCube;
         this.locationsBuilder = new LocationsBuilder(this, testCube);
     }
