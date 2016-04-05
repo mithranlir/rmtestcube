@@ -10,6 +10,7 @@ import jsr166e.ThreadLocalRandom;
 import rmlib.ProgrammaticCube;
 import rmlib.cubebuilder.CubeBuilder;
 import rmlib.cubebuilder.subbuilder.*;
+import rmlib.manager.ActivePivotManagerWrapper;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -21,7 +22,11 @@ import static rmlib.example.riskdata.DatastoreConsts.RISK__PNL;
 public class RiskCubeBuildHelper {
 
 
-    public static ProgrammaticCube buildRiskCube() throws Exception {
+    public static ProgrammaticCube buildRiskCube(boolean start) throws Exception {
+        return buildRiskCube(start, false, null);
+    }
+
+    public static ProgrammaticCube buildRiskCube(boolean start, boolean resetable, ActivePivotManagerWrapper activePivotManagerWrapper) throws Exception {
         final CubeBuilder cubeBuilder = new CubeBuilder();
 
         final ProgrammaticCube testCube = cubeBuilder
@@ -82,7 +87,7 @@ public class RiskCubeBuildHelper {
                 .withChannel(RiskDataHelper.TOPIC_RISK, RiskDataHelper.TEST_RISK_STORE, Arrays.asList("pnl"), false, createProcedureForRiskStore())
                 .withEpochManagementPolicy(new CustomEpochPolicy(5 * 60_000, 5 * 60_000, 30 * 60_000))
                         // Retain the latest 5 minutes of history and retain one version each 5 minutes, until the last 30 minutes.
-                .buildTestCube(true);
+                .buildTestCube(start, resetable, activePivotManagerWrapper);
 
         return testCube;
     }

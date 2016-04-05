@@ -17,6 +17,7 @@ import com.quartetfs.fwk.query.QueryException;
 import rmlib.channel.ChannelFeedHelper;
 import rmlib.channel.DefaultValueService;
 import rmlib.cubebuilder.CubeBuilder;
+import rmlib.manager.ActivePivotManagerWrapper;
 import rmlib.transaction.TransactionHelper;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class ProgrammaticCube {
     private final IDatastoreSchemaDescription datastoreSchemaDescription;
     private final IActivePivotManagerDescription activePivotManagerDescription;
     private final IDatastore datastore;
+    private final boolean resetable;
 
     public ProgrammaticCube(IActivePivotManager manager,
                             IMultiVersionActivePivot pivot,
@@ -42,7 +44,8 @@ public class ProgrammaticCube {
                             DefaultValueService defaultValueService,
                             IDatastoreSchemaDescription datastoreSchemaDescription,
                             IActivePivotManagerDescription activePivotManagerDescription,
-                            IDatastore datastore) {
+                            IDatastore datastore,
+                            boolean resetable) {
         this.manager = manager;
         this.pivot = pivot;
         this.channelMap = channelMap;
@@ -51,6 +54,7 @@ public class ProgrammaticCube {
         this.datastoreSchemaDescription = datastoreSchemaDescription;
         this.activePivotManagerDescription = activePivotManagerDescription;
         this.datastore = datastore;
+        this.resetable = resetable;
     }
 
     public IMultiVersionActivePivot getPivot() {
@@ -59,6 +63,10 @@ public class ProgrammaticCube {
 
     public IActivePivotManager getManager() {
         return manager;
+    }
+
+    public ActivePivotManagerWrapper getManagerAsWrapper() {
+        return manager instanceof ActivePivotManagerWrapper ? (ActivePivotManagerWrapper) manager : null;
     }
 
     public Map<String, IMessageChannel<String, Object>> getChannelMap() {
@@ -135,5 +143,8 @@ public class ProgrammaticCube {
         return storeFieldTypeMap;
     }
 
+    public boolean isResetable() {
+        return resetable;
+    }
 
 }

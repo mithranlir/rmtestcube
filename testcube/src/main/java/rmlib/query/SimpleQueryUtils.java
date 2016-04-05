@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-public class QueryUtils {
+public class SimpleQueryUtils {
 
     public static SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy", Locale.ENGLISH);
 
@@ -29,17 +29,15 @@ public class QueryUtils {
         return new GetAggregatesQueryBuilder(testCube);
     }
 
-    public static void queryCubeSimple(String cubeName, IActivePivotManager manager, int nbWildCards) throws QueryException {
-
+    public static void queryCubeSimple(String cubeName, IActivePivotManager manager) throws QueryException {
         System.out.println("queryCubeSimple");
-
-        final GetAggregatesQuery query = createSimpleQuery(nbWildCards);
-        final ICellSet cellSet = executeQuery(cubeName, manager, query);
+        final IMultiVersionActivePivot ap = manager.getActivePivots().get(cubeName);
+        final GetAggregatesQuery query = createSimpleQuery(ap);
+        final ICellSet cellSet = executeQuery(ap, query);
         System.out.println("LocationCount=" + cellSet.getLocationCount());
     }
 
-    public static ICellSet executeQuery(String cubeName, IActivePivotManager manager, GetAggregatesQuery query) throws QueryException {
-        final IMultiVersionActivePivot ap = manager.getActivePivots().get(cubeName);
+    public static ICellSet executeQuery(IMultiVersionActivePivot ap, GetAggregatesQuery query) throws QueryException {
         final IContextSnapshot oldContext = ServicesUtil.applyContextValues(ap, query.getContextValues(), true);
         final ICellSet cellSet;
         try {
@@ -51,16 +49,26 @@ public class QueryUtils {
         return cellSet;
     }
 
-    public static GetAggregatesQuery createSimpleQuery(int cptWildCards) {
-
-        final Collection<ILocation> locations = ImmutableSet.of(
-                (ILocation) new Location(ILocation.WILDCARD));
-
+    public static GetAggregatesQuery createSimpleQuery(IMultiVersionActivePivot ap) {
+        final ILocation location = createLocation(ap);
+        final Collection<ILocation> locations = ImmutableSet.of(location);
         final Collection<String> measureSelections = Arrays.asList("contributors.COUNT");
         final GetAggregatesQuery query = new GetAggregatesQuery(locations, measureSelections);
         final List<IContextValue> contextValues = Lists.newArrayList();
         query.setContextValues(contextValues);
         return query;
+    }
+
+    private static ILocation createLocation(IMultiVersionActivePivot ap) {
+        final int cptWildCards = ap.getHierarchies().size() - 1;
+        String locationStr = "";
+        for(int i=0; i<cptWildCards; i++) {
+            if(i>0) {
+                locationStr+="|";
+            }
+            locationStr+=ILocation.WILDCARD;
+        }
+        return new Location(locationStr);
     }
 
 }

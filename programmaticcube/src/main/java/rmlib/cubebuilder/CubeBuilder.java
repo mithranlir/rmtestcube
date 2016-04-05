@@ -35,6 +35,7 @@ import rmlib.channel.ChannelCreationHelper;
 import rmlib.channel.DefaultValueService;
 import rmlib.channel.SimpleDefaultValueService;
 import rmlib.cubebuilder.subbuilder.*;
+import rmlib.manager.ActivePivotManagerWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -194,7 +195,9 @@ public class CubeBuilder {
 
     }
 
-    public ProgrammaticCube buildTestCube(boolean start) throws Exception {
+    public ProgrammaticCube buildTestCube(boolean start,
+                                          boolean resetable,
+                                          ActivePivotManagerWrapper rebuildableActivePivotManager) throws Exception {
 
         final ActivePivotInstanceDescription instanceDescription =
                 buildInstanceDescription();
@@ -216,8 +219,13 @@ public class CubeBuilder {
 
         configureInjections();
 
-        final IActivePivotManager manager =
+        IActivePivotManager manager =
                 buildManager(managerDescription, datastore);
+
+        if(resetable) {
+            rebuildableActivePivotManager.changeManager(manager, false);
+            manager = rebuildableActivePivotManager;
+        }
 
         if(start) {
             manager.init(null);
@@ -230,7 +238,7 @@ public class CubeBuilder {
         final IMultiVersionActivePivot pivot = manager.getActivePivots().get(TEST_CUBE);
 
         return new ProgrammaticCube(manager, pivot, channelMap, storeFieldTypeMap, defaultValueService,
-                datastoreSchemaDescription, managerDescription, datastore);
+                datastoreSchemaDescription, managerDescription, datastore, resetable);
     }
 
     private void configureStoreFieldTypeMap(Datastore datastore) {

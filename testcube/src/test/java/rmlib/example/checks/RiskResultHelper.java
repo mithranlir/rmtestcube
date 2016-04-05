@@ -6,7 +6,7 @@ import com.quartetfs.biz.pivot.cube.hierarchy.ILevel;
 import com.quartetfs.biz.pivot.cube.hierarchy.IMultiVersionHierarchy;
 import com.quartetfs.fwk.query.QueryException;
 import rmlib.ProgrammaticCube;
-import rmlib.query.QueryUtils;
+import rmlib.query.SimpleQueryUtils;
 import rmlib.result.AggregatesQueryResult;
 
 import java.text.ParseException;
@@ -19,9 +19,9 @@ public class RiskResultHelper {
         System.out.println("queryCubeAndCheckResults");
 
         final IMultiVersionActivePivot ap = manager.getActivePivots().get(cubeName);
-        final ProgrammaticCube testCube = new ProgrammaticCube(manager, ap, null, null, null, null, null, null);
+        final ProgrammaticCube testCube = new ProgrammaticCube(manager, ap, null, null, null, null, null, null, false);
 
-        final AggregatesQueryResult result2 = QueryUtils.createAggregatesQueryBuilder(testCube)
+        final AggregatesQueryResult result2 = SimpleQueryUtils.createAggregatesQueryBuilder(testCube)
                 .withHierarchy("HistoricalDates", new Object[]{ null })
                 .addLocation()
                 .withMeasure("contributors.COUNT")
@@ -38,7 +38,7 @@ public class RiskResultHelper {
 
 
         result2.assertionLocationBuilder()
-                .withHierarchy("HistoricalDates", QueryUtils.sdf.parse("Fri Jan 01 00:00:00 CET 2016"))
+                .withHierarchy("HistoricalDates", SimpleQueryUtils.sdf.parse("Fri Jan 01 00:00:00 CET 2016"))
                 .measureHasValue("contributors.COUNT", 1L);
 
     }

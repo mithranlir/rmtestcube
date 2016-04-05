@@ -86,4 +86,7 @@ public class RiskCsvLoadHelper {
 
     }
 
+    public static void unregisterUpdateWhereTriggers(IDatastore datastore) throws DatastoreTransactionException {
+        datastore.getTransactionManager().unregisterUpdateWhereTrigger(RISK_STORE, "Risk Calculator Trigger");
+    }
 }
