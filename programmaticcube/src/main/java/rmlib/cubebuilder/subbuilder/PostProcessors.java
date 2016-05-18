@@ -1,6 +1,7 @@
 package rmlib.cubebuilder.subbuilder;
 
 import com.quartetfs.biz.pivot.definitions.impl.PostProcessorDescription;
+import com.quartetfs.fwk.format.IFormatter;
 
 import java.util.Properties;
 
@@ -20,6 +21,7 @@ public class PostProcessors {
         private String group = null;
         private String continuousQueryHandlers = null;
         private Properties properties = null;
+        private IFormatter formatter = null;
 
         public PostProcessorDescriptionBuilder withName(String name) {
             this.name = name;
@@ -51,6 +53,11 @@ public class PostProcessors {
             return self();
         }
 
+        public PostProcessorDescriptionBuilder withFormatter(IFormatter formatter) {
+            this.formatter = formatter;
+            return self();
+        }
+
         public PostProcessorDescriptionBuilder withContinuousQueryHandlers(String continuousQueryHandlers) {
             this.continuousQueryHandlers = continuousQueryHandlers;
             return self();
@@ -69,7 +76,10 @@ public class PostProcessors {
             final PostProcessorDescription postProcessorDescription = new PostProcessorDescription();
             postProcessorDescription.setName(name);
             postProcessorDescription.setPluginKey(pluginKey);
-            postProcessorDescription.setUnderlyingMeasures(underlyingMeasures);
+
+            if(underlyingMeasures!=null) {
+                postProcessorDescription.setUnderlyingMeasures(underlyingMeasures);
+            }
 
             if(folder!=null) {
                 postProcessorDescription.setFolder(folder);
@@ -89,6 +99,10 @@ public class PostProcessors {
 
             if(properties!=null) {
                 postProcessorDescription.setProperties(properties);
+            }
+
+            if(formatter != null) {
+                postProcessorDescription.setFormatter(formatter);
             }
 
             return postProcessorDescription;

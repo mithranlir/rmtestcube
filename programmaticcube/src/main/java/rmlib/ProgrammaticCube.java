@@ -17,7 +17,6 @@ import com.quartetfs.fwk.query.QueryException;
 import rmlib.channel.ChannelFeedHelper;
 import rmlib.channel.DefaultValueService;
 import rmlib.cubebuilder.CubeBuilder;
-import rmlib.manager.ActivePivotManagerWrapper;
 import rmlib.transaction.TransactionHelper;
 
 import java.util.List;

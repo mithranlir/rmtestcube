@@ -1,6 +1,7 @@
 package rmlib.cubebuilder.subbuilder;
 
 import com.quartetfs.biz.pivot.definitions.impl.AggregatedMeasureDescription;
+import com.quartetfs.fwk.format.IFormatter;
 
 import java.util.Properties;
 
@@ -15,6 +16,7 @@ public class AggregatedMeasures {
         private String name = null;
         private String fieldName = null;
         private String folder = null;
+        private IFormatter formatter = null;
         private Boolean visible = null;
         private String group = null;
         private Properties properties = null;
@@ -33,6 +35,11 @@ public class AggregatedMeasures {
 
         public AggregatedMeasureDescriptionBuilder withFolder(String folder) {
             this.folder = folder;
+            return self();
+        }
+
+        public AggregatedMeasureDescriptionBuilder withFormatter(IFormatter formatter) {
+            this.formatter = formatter;
             return self();
         }
 
@@ -77,21 +84,31 @@ public class AggregatedMeasures {
             if(folder!=null) {
                 aggregatedMeasureDescription.setFolder(folder);
             }
+
+            if (formatter != null) {
+                aggregatedMeasureDescription.setFormatter(formatter);
+            }
+
             if(visible!=null) {
                 aggregatedMeasureDescription.setVisible(visible);
             }
+
             if(group!=null) {
                 aggregatedMeasureDescription.setGroup(group);
             }
+
             if(properties!=null) {
                 aggregatedMeasureDescription.setProperties(properties);
             }
+
             if(swap!=null) {
                 aggregatedMeasureDescription.setSwap(swap);
             }
+
             if(preProcessedAggregation!=null) {
                 aggregatedMeasureDescription.setPreProcessedAggregation(preProcessedAggregation);
             }
+
             return aggregatedMeasureDescription;
         }
     }

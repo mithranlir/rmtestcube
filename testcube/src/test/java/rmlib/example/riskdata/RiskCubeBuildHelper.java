@@ -30,10 +30,10 @@ public class RiskCubeBuildHelper {
                 .withStore(
                         new StoreDescriptionBuilder()
                                 .withStoreName(RiskDataHelper.TEST_RISK_STORE)
-                                .withField(DatastoreConsts.RISK__TRADE_ID, LONG).asKeyField()
+                                .withField(DatastoreConsts.RISK__FACT_ID, LONG).asKeyField()
                                 .withField(DatastoreConsts.RISK__AS_OF_DATE, "date[" + RiskEntry.DATE_PATTERN + "]").asKeyField()
                                 .withField(DatastoreConsts.RISK__PNL, DOUBLE)
-                                .withModuloPartitioning(DatastoreConsts.RISK__TRADE_ID, 8).build()
+                                .withModuloPartitioning(DatastoreConsts.RISK__FACT_ID, 8).build()
                 )
                 .withSelection(Selections.builder()
                                 .withBaseStore(RiskDataHelper.TEST_RISK_STORE)

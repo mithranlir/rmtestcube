@@ -21,6 +21,7 @@ public class AxisHierarchies {
         private Boolean defaultHierarchy = null;
         private Boolean factless = null;
         private String pluginKey = null;
+        private String folder = null;
 
         public AxisHierarchyDescriptionBuilder withVisible(boolean visible) {
             this.visible = visible;
@@ -57,6 +58,11 @@ public class AxisHierarchies {
             return self();
         }
 
+        public AxisHierarchyDescriptionBuilder withFolder(String folder) {
+            this.folder = folder;
+            return self();
+        }
+
         protected AxisHierarchyDescription doBuild() {
             final AxisHierarchyDescription axisHierarchyDescription = new AxisHierarchyDescription();
 
@@ -86,33 +92,11 @@ public class AxisHierarchies {
                 axisHierarchyDescription.setPluginKey(pluginKey);
             }
 
+            if(folder!=null) {
+                axisHierarchyDescription.setFolder(folder);
+            }
+
             return axisHierarchyDescription;
         }
     }
-
-    /*
-
-
-
-<!-- Dynamic time buckets, bucketing performed at rmlib.query time. -->
-<!-- This requires the cooperation of bucketing post processor. -->
-    <hierarchy name="TimeBucketDynamic" folder="Bucketing" pluginKey="TIME_BUCKET" factless="false"/>
-</dimension>
-
-inject(IAggregatesContinuousHandler.class, AnalysisHierarchyMeasureHandler.PLUGIN_TYPE, "analysisHierarchyName", "TimeBucketDynamic");
-								-> UPDATE_ANALYSIS_HIERARCHY
-
-public class TimeBucketerPostProcessor extends ABucketerPostProcessor<Long, Object> {
-    static final String PLUGIN_TYPE = "TIME_BUCKETER";
-
-inject(IMultiVersionHierarchy.class, "TIME_BUCKET", timeBucketer());
-
-si analysis hierarchy alors :
-  MultiVersionAnalysisHierarchy
-  AnalysisAxisHierarchy
-sinon
-  MultiVersionAxisHierarchy
-
- */
-
 }

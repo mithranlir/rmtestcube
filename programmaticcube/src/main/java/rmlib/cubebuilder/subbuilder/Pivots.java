@@ -1,10 +1,13 @@
 package rmlib.cubebuilder.subbuilder;
 
-import com.quartetfs.biz.pivot.definitions.IAggregateProviderDefinition;
-import com.quartetfs.biz.pivot.definitions.IAxisDimensionsDescription;
-import com.quartetfs.biz.pivot.definitions.IEpochDimensionDescription;
-import com.quartetfs.biz.pivot.definitions.IMeasuresDescription;
+import com.quartetfs.biz.pivot.context.IContextValue;
+import com.quartetfs.biz.pivot.context.impl.QueriesTimeLimit;
+import com.quartetfs.biz.pivot.definitions.*;
 import com.quartetfs.biz.pivot.definitions.impl.ActivePivotDescription;
+import com.quartetfs.biz.pivot.definitions.impl.ContextValuesDescription;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class Pivots {
 
@@ -20,6 +23,8 @@ public class Pivots {
         private Integer aggregatesCacheSize = null;
         private Boolean autoFactlessHierarchies = null;
         private IAggregateProviderDefinition aggregateProvider = null;
+        private Integer queriesTimeLimit = null;
+
 
         public PivotDescriptionBuilder withAxisDimensionsDescription(IAxisDimensionsDescription axisDimensionsDescription) {
             this.axisDimensionsDescription = axisDimensionsDescription;
@@ -46,6 +51,11 @@ public class Pivots {
             return self();
         }
 
+        public PivotDescriptionBuilder withQueriesTimeLimit(int queriesTimeLimit) {
+            this.queriesTimeLimit = queriesTimeLimit;
+            return self();
+        }
+
         protected ActivePivotDescription doBuild() {
             final ActivePivotDescription pivotDescription = new ActivePivotDescription();
             pivotDescription.setAxisDimensions(axisDimensionsDescription);
@@ -65,6 +75,19 @@ public class Pivots {
 
             if(autoFactlessHierarchies!=null) {
                 pivotDescription.setAutoFactlessHierarchies(autoFactlessHierarchies);
+            }
+
+            if(queriesTimeLimit!=null) {
+
+                final IContextValuesDescription contextValuesDescription = new ContextValuesDescription();
+
+                final Collection<IContextValue> ctvValues = new ArrayList<>();
+                final QueriesTimeLimit queriesTimeLimitCV = new QueriesTimeLimit(queriesTimeLimit);
+                ctvValues.add(queriesTimeLimitCV);
+
+                contextValuesDescription.addValues(ctvValues);
+
+                pivotDescription.setSharedContexts(contextValuesDescription);
             }
 
             return pivotDescription;

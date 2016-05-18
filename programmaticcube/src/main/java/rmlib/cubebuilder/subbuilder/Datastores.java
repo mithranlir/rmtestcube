@@ -80,7 +80,9 @@ public class Datastores {
             buildDatastoreDatastore.addSchemaDescriptionPostProcessors(
                     schemaDescriptionPostProcessorList.toArray(new IDatastoreSchemaDescriptionPostProcessor[0]));
 
-            buildDatastoreDatastore.setEpochManagementPolicy(epochManagementPolicy);
+            if(epochManagementPolicy!=null) {
+                buildDatastoreDatastore.setEpochManagementPolicy(epochManagementPolicy);
+            }
 
             if (epochManager != null) {
                 buildDatastoreDatastore.setEpochManager(epochManager);

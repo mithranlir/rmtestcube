@@ -11,7 +11,9 @@ import com.quartetfs.biz.pivot.definitions.IAxisLevelDescription;
 import java.util.List;
 
 public class HierarchiesPrintHelper {
-    private static void printHierarchies(String cubeName, IActivePivotManager manager) {
+
+    public static void printHierarchies(String cubeName, IActivePivotManager manager) {
+
         System.out.println("Hierarchies :");
         final IMultiVersionActivePivot ap = manager.getActivePivots().get(cubeName);
         final List<? extends IMultiVersionHierarchy> hierarchies = ap.getHierarchies();
@@ -20,12 +22,6 @@ public class HierarchiesPrintHelper {
             for(ILevel level : hierarchy.getLevels()) {
                 System.out.println("  levelName=" + level.getName());
             }
-
-            final String retrievedFirstMemberForDepth0 = hierarchy.getLatestVersion().retrieveMembers(-1).get(0).getName();
-            System.out.println("retrievedFirstMember for depth 0 : " + retrievedFirstMemberForDepth0);
-
-            final String retrievedFirstMemberForDepth1 = hierarchy.getLatestVersion().retrieveMembers(0).get(0).getName();
-            System.out.println("retrievedFirstMember for depth 1 : " + retrievedFirstMemberForDepth1);
         }
 
         System.out.println("AxisDimensions :");
@@ -36,7 +32,7 @@ public class HierarchiesPrintHelper {
             System.out.println("dimensionName=" + dimensionDescriptionName);
             for(IAxisHierarchyDescription hierarchyDescription : axisDimensionDescription.getHierarchies()) {
                 final String hierarchyDescriptionName = hierarchyDescription.getName();
-                System.out.println("  hieararchyName=" + hierarchyDescriptionName);
+                System.out.println("  hierarchyName=" + hierarchyDescriptionName);
                 for (IAxisLevelDescription level : hierarchyDescription.getLevels()) {
                     System.out.println("    levelName=" + level.getLevelName());
                 }

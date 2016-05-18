@@ -41,7 +41,7 @@ public class ProgrammaticCubeWrapper implements IProgrammaticCube {
 
     @Override
     public IActivePivotManager getManager() {
-        return programmaticCube.getManager();
+        return activePivotManagerWrapper;
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.qfs.msg.csv.ICSVTopic;
 import com.qfs.msg.csv.IFileInfo;
 import com.qfs.msg.csv.ILineReader;
 import com.qfs.msg.csv.impl.CSVSource;
+import com.qfs.msg.csv.translator.impl.AColumnCalculator;
 import com.qfs.msg.impl.EmptyCalculator;
 import com.qfs.source.impl.CSVMessageChannelFactory;
 import com.qfs.source.impl.Fetch;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class RiskCsvLoadHelper {
 
@@ -57,7 +59,8 @@ public class RiskCsvLoadHelper {
                 riskTopicName,
                 riskStoreName,
                 Arrays.<IColumnCalculator<ILineReader>>asList(
-                        new EmptyCalculator<ILineReader>(DatastoreConsts.RISK__PNL) // because calculated in trigger...
+                        new EmptyCalculator<ILineReader>(DatastoreConsts.RISK__PNL), // because calculated in trigger...
+                        createFactIdColumnCalculator()
                 )
         );
 
@@ -70,6 +73,18 @@ public class RiskCsvLoadHelper {
         System.out.println("CSV data load completed in " + elapsed / 1_000_000L + "ms.");
     }
 
+    private static IColumnCalculator<ILineReader> createFactIdColumnCalculator() {
+        return new AColumnCalculator<ILineReader>(DatastoreConsts.RISK__FACT_ID) {
+            final AtomicLong keyGenerator = new AtomicLong();
+            @Override
+            public Object compute(IColumnCalculationContext iColumnCalculationContext) {
+                return keyGenerator.incrementAndGet();
+            }
+        };
+    }
+
+    public final static String TRIGGER_NAME = "Risk Calculator Trigger";
+
     public static void registerUpdateWhereTriggers(IDatastore datastore) throws DatastoreTransactionException {
 
         IDatastoreSchemaMetadata datastoreSchemaMetadata = datastore.getSchemaMetadata();
@@ -77,7 +92,7 @@ public class RiskCsvLoadHelper {
         int pnlIndex = StoreUtils.getFieldIndex(datastoreSchemaMetadata, RISK_STORE, DatastoreConsts.RISK__PNL);
 
         datastore.getTransactionManager().registerUpdateWhereTrigger(
-                "Risk Calculator Trigger",
+                TRIGGER_NAME,
                 0,
                 new Selection(RISK_STORE,  DatastoreConsts.RISK__PNL),
                 BaseConditions.TRUE, // We want to match all facts
@@ -87,6 +102,6 @@ public class RiskCsvLoadHelper {
     }
 
     public static void unregisterUpdateWhereTriggers(IDatastore datastore) throws DatastoreTransactionException {
-        datastore.getTransactionManager().unregisterUpdateWhereTrigger(RISK_STORE, "Risk Calculator Trigger");
+        datastore.getTransactionManager().unregisterUpdateWhereTrigger(RISK_STORE, TRIGGER_NAME);
     }
 }

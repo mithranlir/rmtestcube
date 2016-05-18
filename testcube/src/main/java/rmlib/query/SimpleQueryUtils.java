@@ -60,6 +60,7 @@ public class SimpleQueryUtils {
     }
 
     private static ILocation createLocation(IMultiVersionActivePivot ap) {
+
         final int cptWildCards = ap.getHierarchies().size() - 1;
         String locationStr = "";
         for(int i=0; i<cptWildCards; i++) {
@@ -68,7 +69,10 @@ public class SimpleQueryUtils {
             }
             locationStr+=ILocation.WILDCARD;
         }
-        return new Location(locationStr);
+
+        final Location location = new Location(locationStr);
+
+        return location;
     }
 
 }

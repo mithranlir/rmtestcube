@@ -45,10 +45,12 @@ import java.util.Map;
 
 public class CubeBuilder {
 
-    public static final String TEST_CALALOG_NAME = "TestCatalog";
+    public static final String TEST_CATALOG = "TestCatalog";
     public static final String TEST_SCHEMA = "TestSchema";
     public static final String TEST_CUBE = "TestCube";
 
+    private final String cubeName;
+    private final String catalogName;
     private final Dimensions.AxisDimensionsDescriptionBuilder axisDimensionsDescriptionBuilder;
     private final Measures.MeasuresDescriptionBuilder measuresDescriptionBuilder;
     private final Managers.ManagerDescriptionBuilder managerDescriptionBuilder;
@@ -62,12 +64,18 @@ public class CubeBuilder {
     private final List<ObjectInjection> objectsToInject = new ArrayList<>();
     private IEpochDimensionDescription epochDimensionDescription = null;
     private Integer aggregatesCacheSize = null;
+    private Integer queriesTimeLimit = null;
     private IAggregateProviderDefinition aggregateProviderDefinition = null;
     private Map<String, StoreFields> storeFieldTypeMap = new HashMap<>();
     private final DefaultValueService defaultValueService;
 
-
     public CubeBuilder() {
+        this(TEST_CUBE, TEST_CATALOG);
+    }
+
+    public CubeBuilder(String cubeName, String catalogName) {
+        this.cubeName = cubeName;
+        this.catalogName = catalogName;
         axisDimensionsDescriptionBuilder = Dimensions.builder();
         measuresDescriptionBuilder = Measures.builder();
         managerDescriptionBuilder = Managers.builder();
@@ -167,6 +175,11 @@ public class CubeBuilder {
         return this;
     }
 
+    public CubeBuilder withQueriesTimeLimit(Integer queriesTimeLimit) {
+        this.queriesTimeLimit = queriesTimeLimit;
+        return this;
+    }
+
     public CubeBuilder withAggregatesCacheSize(Integer aggregatesCacheSize) {
         this.aggregatesCacheSize = aggregatesCacheSize;
         return this;
@@ -230,7 +243,7 @@ public class CubeBuilder {
         final Map<String, IMessageChannel<String, Object>> channelMap =
                 configureChannels(datastore);
 
-        final IMultiVersionActivePivot pivot = manager.getActivePivots().get(TEST_CUBE);
+        final IMultiVersionActivePivot pivot = manager.getActivePivots().get(cubeName);
 
         return new ProgrammaticCube(manager, pivot, channelMap, storeFieldTypeMap, defaultValueService,
                 datastoreSchemaDescription, managerDescription, datastore);
@@ -324,7 +337,6 @@ public class CubeBuilder {
             this.datastoreSchemaDescription = datastoreSchemaDescription;
         }
 
-
         public Datastore getDatastore() {
             return datastore;
         }
@@ -356,10 +368,14 @@ public class CubeBuilder {
             pivotDescriptionBuilder.withAggregatesCacheSize(aggregatesCacheSize);
         }
 
+        if(queriesTimeLimit!=null) {
+            pivotDescriptionBuilder.withQueriesTimeLimit(queriesTimeLimit);
+        }
+
         final ActivePivotDescription pivotDescription = pivotDescriptionBuilder.build();
 
         final ActivePivotInstanceDescription instanceDescription =  new ActivePivotInstanceDescription();
-        instanceDescription.setId(TEST_CUBE);
+        instanceDescription.setId(cubeName);
         instanceDescription.setActivePivotDescription(pivotDescription);
 
         return instanceDescription;
@@ -367,8 +383,8 @@ public class CubeBuilder {
 
     private ActivePivotManagerDescription buildManagerDescription(ActivePivotInstanceDescription instanceDescription) {
 
-        managerDescriptionBuilder.withActivePivotId(TEST_CUBE);
-        managerDescriptionBuilder.withCatalogId(TEST_CALALOG_NAME);
+        managerDescriptionBuilder.withActivePivotId(cubeName);
+        managerDescriptionBuilder.withCatalogId(catalogName);
         managerDescriptionBuilder.withSchemaInstanceId(TEST_SCHEMA);
         managerDescriptionBuilder.withSelectionDescription(selectionDescription);
         managerDescriptionBuilder.withInstanceDescription(instanceDescription);

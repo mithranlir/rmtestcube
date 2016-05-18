@@ -51,8 +51,8 @@ public class RiskEntryGenerator {
 
 		final Calendar calendar = CALENDAR.get();
 
-		List<RiskEntry> risks = new ArrayList<>(this.historicalDates + 1);
-		for(int i = 0; i <= this.historicalDates; i++) {
+		List<RiskEntry> risks = new ArrayList<>(this.historicalDates);
+		for(int i = 0; i < this.historicalDates; i++) {
 
 			calendar.setTimeInMillis(curDate.getTime());
 			calendar.add(Calendar.DAY_OF_MONTH, -i);

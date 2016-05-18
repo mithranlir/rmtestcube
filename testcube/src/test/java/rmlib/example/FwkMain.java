@@ -9,6 +9,7 @@ import com.quartetfs.fwk.query.QueryException;
 import rmlib.IProgrammaticCube;
 import rmlib.ProgrammaticCubeWrapper;
 import rmlib.cubebuilder.CubeBuilder;
+import rmlib.debug.HierarchiesPrintHelper;
 import rmlib.example.checks.RiskResultHelper;
 import rmlib.example.riskdata.RiskCsvLoadHelper;
 import rmlib.example.riskdata.RiskCubeBuildHelper;
@@ -29,11 +30,13 @@ public class FwkMain {
         final IProgrammaticCube testCube = RiskCubeBuildHelper.buildRiskCube(true);
         final ProgrammaticCubeWrapper testCubeWrapper = new ProgrammaticCubeWrapper(testCube);
 
-        boolean dataInsertedInStoreDirectly = false;
+        boolean dataInsertedInStoreDirectly = true;
 
         loadAndCheck(testCubeWrapper, dataInsertedInStoreDirectly);
 
-        RiskCsvLoadHelper.unregisterUpdateWhereTriggers(testCubeWrapper.getDatastore());
+        if(!dataInsertedInStoreDirectly) {
+            RiskCsvLoadHelper.unregisterUpdateWhereTriggers(testCubeWrapper.getDatastore());
+        }
         testCubeWrapper.purgeDatastore();
 
         final IProgrammaticCube newTestCube = RiskCubeBuildHelper.buildRiskCube(true);
@@ -48,7 +51,9 @@ public class FwkMain {
     private static void loadAndCheck(ProgrammaticCubeWrapper testCubeWrapper, boolean dataInsertedInStoreDirectly) throws DatastoreTransactionException, LogWriteException, QueryException, ParseException {
         loadData(testCubeWrapper, dataInsertedInStoreDirectly);
 
-        RiskResultHelper.printHierarchies(testCubeWrapper.getPivot().getId(), testCubeWrapper.getManager());
+        //RiskResultHelper.printHierarchies(testCubeWrapper.getPivot().getId(), testCubeWrapper.getManager());
+
+        HierarchiesPrintHelper.printHierarchies(testCubeWrapper.getPivot().getId(), testCubeWrapper.getManager());
 
         // QUERY CUBE (SIMPLE)
         SimpleQueryUtils.queryCubeSimple(CubeBuilder.TEST_CUBE, testCubeWrapper.getManager());
